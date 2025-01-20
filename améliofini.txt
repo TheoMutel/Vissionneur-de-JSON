@@ -1,0 +1,404 @@
+fonction import/export: 
+
+HTML:
+
+
+
+<ul class="nav navbar-nav">
+            <li class="active" id="jsonLi">
+              <a href="#" id="jsonViewMenu">JSON&nbsp;</a>
+            </li>
+            <li class="active" id="tableLi">
+              <a href="#" id="tableViewMenu">&nbsp;Table&nbsp;</a>
+            </li>
+            <li class="active" id="treeLi">
+              <a href="#" id="treeViewMenu">&nbsp;Arbre&nbsp;</a>
+            </li>
+            <li class="active" id="treeLi">
+              <a href="deconnexion.php" id="treeViewMenu">&nbsp;disco&nbsp;</a>
+            </li>
+          </ul>
+          
+          <div class="btn-group navbar-btn" role="group">
+            <button type="button" class="btn btn-default" id="load_json_btn">
+              <span class="glyphicon glyphicon-play"></span>
+            </button>
+            <button type="button" class="btn btn-default" id="export_json_btn">
+              <span class="glyphicon glyphicon-download-alt"></span>
+            </button>
+            <button type="button" class="btn btn-default" id="import_json_btn">
+              <span class="glyphicon glyphicon-upload"></span>
+            </button>
+          </div>
+
+ 
+
+
+  <script>
+    // Fonction d'exportation JSON
+    function exportJson() {
+      var jsonData = getJsonData(); // Obtenez les données JSON à exporter (fonction à implémenter dans viewer.js)
+      var jsonString = JSON.stringify(jsonData, null, 2); // Convertir les données en chaîne JSON formatée
+      var blob = new Blob([jsonString], { type: 'application/json' }); // Créer un objet Blob à partir de la chaîne JSON
+      var url = URL.createObjectURL(blob); // Créer une URL à partir du Blob
+  
+      // Créer un lien de téléchargement
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = 'data.json';
+      link.click();
+  
+      URL.revokeObjectURL(url); // Libérer l'URL du Blob
+    }
+  
+    // Fonction d'importation JSON
+    function importJson() {
+      var input = document.createElement('input');
+      input.type = 'file';
+  
+      input.onchange = function (event) {
+        var file = event.target.files[0];
+        var reader = new FileReader();
+  
+        reader.onload = function () {
+          var jsonData = JSON.parse(reader.result); // Analyser le fichier JSON importé
+          displayJsonData(jsonData); // Afficher les données JSON importées (fonction à implémenter dans viewer.js)
+        };
+  
+        reader.readAsText(file);
+      };
+  
+      input.click();
+    }
+  
+    // Attacher les gestionnaires d'événements aux boutons d'importation/exportation
+    document.getElementById('export_json_btn').addEventListener('click', exportJson);
+    document.getElementById('import_json_btn').addEventListener('click', importJson);
+  </script>
+
+ 
+
+JAVASCRIPT:
+function getJsonData() {
+  var jsonTextArea = document.getElementById('json_vl');
+  var jsonData = null;
+
+  try {
+    jsonData = JSON.parse(jsonTextArea.value);
+  } catch (error) {
+    console.error('Erreur lors de l analyse du JSON ', error);
+  }
+
+  return jsonData;
+}
+function displayJsonData(jsonData) {
+  var jsonTextArea = document.getElementById('json_vl');
+  jsonTextArea.value = JSON.stringify(jsonData, null, 2);
+}
+ 
+
+
+fonctionnalité de recherche :
+
+
+
+
+
+HTML :
+
+
+
+ <form class="navbar-form navbar-left">
+          <div class="form-group">
+            <input type="text" class="form-control" id="search_input" placeholder="Rechercher">
+          </div>
+          <button type="button" class="btn btn-default" id="search_btn"><span class="glyphicon glyphicon-search"></span></button>
+        </form>
+ 
+
+
+
+
+JAVASCRIPT : 
+
+
+
+ function getJsonData() {
+  var jsonTextArea = document.getElementById('json_vl');
+  var jsonData = null;
+
+  try {
+    jsonData = JSON.parse(jsonTextArea.value);
+  } catch (error) {
+    console.error('Erreur lors de l\'analyse du JSON :', error);
+  }
+
+  return jsonData;
+}
+
+// Fonction pour afficher les données JSON importées
+function displayJsonData(jsonData) {
+  var jsonTextArea = document.getElementById('json_vl');
+  jsonTextArea.value = JSON.stringify(jsonData, null, 2);
+}
+
+// Ajouter cette ligne en haut du fichier pour sélectionner l'élément de recherche
+var searchInput = document.getElementById('search_input');
+
+// Fonction pour rechercher dans les données JSON
+function searchJsonData() {
+  var jsonData = getJsonData();
+  var searchText = searchInput.value.trim().toLowerCase();
+
+  if (!jsonData || !searchText) {
+    return;
+  }
+
+  var matches = findMatches(jsonData, searchText);
+  displayJsonData(matches);
+}
+
+// Fonction pour trouver les correspondances dans les données JSON
+function findMatches(jsonData, searchText) {
+  var matches = [];
+
+  // Parcourir les propriétés de l'objet JSON
+  for (var key in jsonData) {
+    if (jsonData.hasOwnProperty(key)) {
+      var value = jsonData[key];
+
+      // Vérifier si la clé ou la valeur correspond à la recherche
+      if (key.toLowerCase().includes(searchText) || value.toString().toLowerCase().includes(searchText)) {
+        matches.push({
+          key: key,
+          value: value
+        });
+      }
+
+      // Vérifier si la valeur est un objet JSON
+      if (typeof value === 'object' && value !== null) {
+        var nestedMatches = findMatches(value, searchText);
+
+        // Ajouter les correspondances trouvées dans les objets imbriqués
+        if (nestedMatches.length > 0) {
+          matches.push({
+            key: key,
+            value: nestedMatches
+          });
+        }
+      }
+    }
+  }
+
+  return matches;
+}
+
+// Ajoutez cet événement de clic pour déclencher la recherche lorsqu'on appuie sur le bouton
+var searchBtn = document.getElementById('search_btn');
+searchBtn.addEventListener('click', searchJsonData);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+amelio Java
+
+
+compexité mot de passe : 
+
+package aled;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+
+public class Main extends JFrame {
+    private JTextField tailleField;
+    private JTextArea resultArea;
+    private SecretKeySpec secretKey;
+    private String decrypted;
+    private String password;
+    private byte[] encrypted;
+
+    public Main() {
+        super("Générateur de mot de passe");
+
+        JPanel panel = new JPanel(new GridLayout(4, 1));
+
+        JLabel label1 = new JLabel("Taille du mot de passe:");
+        panel.add(label1);
+
+        tailleField = new JTextField();
+        panel.add(tailleField);
+
+        String[] complexityOptions = {"Faible", "Moyenne", "Forte"};
+        JComboBox<String> complexityComboBox = new JComboBox<>(complexityOptions);
+        panel.add(complexityComboBox);
+
+        JButton generateButton = new JButton("Générer");
+        panel.add(generateButton);
+
+        generateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int tailleP = Integer.parseInt(tailleField.getText());
+                    String complexity = (String) complexityComboBox.getSelectedItem();
+                    
+                    password = generatePassword(tailleP, complexity);
+                    encrypted = encrypt(password);
+                    decrypted = decrypt(encrypted);
+
+                    resultArea.setText("Mot de passe généré: " + password + "\n"
+                            + "Mot de passe crypté: " + new String(encrypted, "UTF-8"));
+
+                    savePasswordToFile(new String(encrypted, StandardCharsets.UTF_8));
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Erreur: " + ex.getMessage());
+                }
+            }
+        });
+
+        JButton decryptButton = new JButton("Décrypter");
+        panel.add(decryptButton);
+
+        decryptButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    resultArea.setText("Mot de passe généré: " + password + "\n"
+                        + "Mot de passe crypté: " + new String(encrypted, "UTF-8") + "\n"
+                        + "Mot de passe décrypté: " + decrypted);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Erreur: " + ex.getMessage());
+                }
+            }
+        });
+
+        resultArea = new JTextArea();
+        resultArea.setEditable(false);
+
+        JScrollPane scrollPane = new JScrollPane(resultArea);
+
+        getContentPane().add(panel, BorderLayout.NORTH);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(400, 400);
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        new Main();
+    }
+
+    private void savePasswordToFile(String password) {
+        try {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Sélectionnez un dossier pour enregistrer le fichier");
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+            int option = fileChooser.showSaveDialog(null);
+
+            if (option == JFileChooser.APPROVE_OPTION) {
+                File selectedFolder = fileChooser.getSelectedFile();
+                String fileName = selectedFolder.getAbsolutePath() + "/passwords.txt";
+                FileWriter writer = new FileWriter(fileName, true);
+                writer.write(password + "\n");
+                writer.close();
+                JOptionPane.showMessageDialog(null, "Le mot de passe a été enregistré dans le fichier " + fileName);
+            }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Erreur lors de l'enregistrement du mot de passe dans le fichier: " + ex.getMessage());
+        }
+    }
+
+    private String generatePassword(int taille, String complexity) {
+        String characters = "";
+
+        if (complexity.equals("Faible")) {
+            characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+        } else if (complexity.equals("Moyenne")) {
+            characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        } else if (complexity.equals("Forte")) {
+            characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}:\"<>?[];',./\\`~|";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        SecureRandom random = new SecureRandom();
+        for (int i = 0; i < taille; i++) {
+            int index = random.nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
+        return sb.toString();
+    }
+
+    private byte[] encrypt(String password) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        SecureRandom random = new SecureRandom();
+        byte[] key = new byte[16];
+        random.nextBytes(key);
+        secretKey = new SecretKeySpec(key, "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        return cipher.doFinal(password.getBytes());
+    }
+
+    private String decrypt(byte[] encrypted) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] decryptedBytes = cipher.doFinal(encrypted);
+        return new String(decryptedBytes);
+    }
+}
+
