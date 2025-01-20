@@ -18,12 +18,6 @@ Un navigateur web moderne (Google Chrome, Firefox, etc.)
 
 Un serveur local pour héberger les fichiers HTML, CSS et JavaScript (comme XAMPP, WAMP, ou un serveur HTTP simple comme http-server pour Node.js)
 
-Installation
-
-Clonez le dépôt sur votre machine locale :
-bash
-git clone <URL_DU_REPO>
-
 Placez les fichiers dans le répertoire de votre serveur local.
 Ouvrez le fichier index.html dans votre navigateur.
 
