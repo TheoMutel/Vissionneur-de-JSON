@@ -55,21 +55,5 @@ viewer.css : Feuille de style pour l'application.
 
 viewer.js : Script principal pour la logique de visualisation JSON.
 
-Exemple de code
-
-Pour trier les données d'un tableau JSON :
-
-javascript
-function sortTable(order) {
-  var table = document.getElementById("table_data");
-  var rows = Array.from(table.rows).slice(1); // Exclure la ligne d'en-tête
-  rows.sort(function (a, b) {
-    var aValue = a.cells[0].textContent.trim();
-    var bValue = b.cells[0].textContent.trim();
-    return order === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-  });
-  rows.forEach(row => table.appendChild(row));
-}
-
 Auteur
 Développé par Mutel Théo.
